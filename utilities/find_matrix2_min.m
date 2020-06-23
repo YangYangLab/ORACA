@@ -1,4 +1,4 @@
-function [pos, val] = find_matrix2_min(m)
+function [pos, val] = find_m2d_min(m)
 %FIND_MATRIX_MIN Finds the maximum value and its position in a matrix
 %   POS = FIND_MATRIX_MIN(M) finds minimum value and returns the position of it in the
 %   matrix.

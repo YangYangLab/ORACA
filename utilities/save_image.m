@@ -1,12 +1,12 @@
-function ok = save_image(filePath, data, fileType)
+function ok = save_image(data, filePath, fileType)
 %SAVE_IMAGE save an image
-%   OK = SAVE_RAW_MATRIX(FILEPATH, DATA, BPP) saves the DATA to FILEPATH using default
+%   OK = SAVE_IMAGE(DATA, FILEPATH, BPP) saves the DATA to FILEPATH using default
 %   datatype of the DATA. 
 %       DATA is a non-negative matrix.
 %       BPP stands for BYTES PER PIXEL (1/2/4 for uint8/uint16/uint32). BPP value other
 %       than 1/2/4 will be considered illegal and 16-bit as default will be used.
 %
-%   simple wrapper for imwrite.
+%   Simple wrapper for imwrite.
 %
 %   See also IMWRITE.
 
@@ -29,7 +29,7 @@ end
 
 try
     imwrite(data, filePath, fileType);
-    disp([mfilename ': image "' inputname(2) '" saved to ' filePath]);
+    disp([mfilename ': image "' inputname(1) '" saved to ' filePath]);
     ok = true;
 catch
     warning([mfilename ': an error occured while saving image.']); 

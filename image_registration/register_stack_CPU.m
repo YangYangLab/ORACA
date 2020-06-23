@@ -1,8 +1,8 @@
-function [rt, regout] = register_stack_RAPID_GPU(moving, template, params)
-%register_stack_RAPID_GPU fast image registration using GPU and downsampling
-%   RT = register_stack_RAPID_GPU(MOVING, TEMPLATE, PARAMS) analyses movements in the video 
+function [rt, regout] = register_stack_CPU(moving, template, params)
+%REGISTER_STACK_CPU fast image registration using CPU and downsampling
+%   RT = REGISTER_STACK_CPU(MOVING, TEMPLATE, PARAMS) analyses movements in the video 
 %   and outputs a table comprising offsets in X-Y direction. 
-%   [..., REGOUT] = register_stack_RAPID_GPU() also outputs registered stack if needed.
+%   [..., REGOUT] = REGISTER_STACK_CPU() also outputs registered stack if needed.
 % Inputs:
 %   MOVING      a 3-D matrix [height * width * nFrames], the video that needs registration
 %   PARAMS      a struct consisting of:
@@ -17,13 +17,7 @@ function [rt, regout] = register_stack_RAPID_GPU(moving, template, params)
 %   RT          a 2-D matrix result table [nFrames*2], each row [yshift, xshift] 
 %   STACKOUT    a 3-D matrix [height * width * nFrames], registered video
 %
-% This code is highly optimised for GPU acceleration. For an equivalent CPU version that do
-% not involve GPU at all, see REGISTER_STACK_RAPID_CPU.
-%
-% This code uses downsampling to accelerate registration. For a downsample-free (slower and 
-% slightly more accurate) registration method, check out REGISTER_STACK_RAPID_NDSGPU.
-%
-%   See also IM_CONVFFT, REGISTER_STACK_RAPID_CPU, REGISTER_STACK_RAPID_NDSGPU.
+%   See also IM_CONVFFT, REGISTER_STACK_GPU.
 
 %   Written by Weihao Sheng, 2019-10-09
 %   Yang Yang's Lab of Neural Basis of Learning and Memory,
@@ -46,19 +40,16 @@ function [rt, regout] = register_stack_RAPID_GPU(moving, template, params)
 if nargin < 3, params = []; end
 
 [height, width, nFrames] = size(moving);    
-maxsft = get_fields(params, 'maxsft', round(min(height, width)/8.0)); maxsft = floor(maxsft/2)*2;
-% mcontsft = get_fields(params, 'mcontsft', []);
-% subpix = get_fields(params, 'subpix', []);
-verbose = get_fields(params, 'verbose', 0); % function as a timer
+maxsft = get_option(params, 'maxsft', round(min(height, width)/8.0)); maxsft = floor(maxsft/2)*2;
+% mcontsft = get_option(params, 'mcontsft', []);
+% subpix = get_option(params, 'subpix', []);
+verbose = get_option(params, 'verbose', 0); % function as a timer
 
-if any([mod(height,2) mod(width,2)]), error('%s: height and width must be even numbers', mfilename); end
+if any([mod(height,2) mod(width,2)]), error('%s: height and width must be even numbers\n', mfilename); end
     
 %% computation
     
 if verbose, t0 = tic; end
-
-    % just to ensure they are in GPU now
-    moving = gpuArray(moving); template = gpuArray(template);
 
     % lets define some fast & readable actions
     normalise = @(im) (double(im) - mean(im(:))) / std(double(im(:))) / sqrt(2);
@@ -82,14 +73,14 @@ if verbose, t0 = tic; end
     tcentralshift = cshift(rotate180(tcentral),[2 2]);
     
     % alarge the container for the unregistered frame
-    dsalarge = gpuArray.zeros(height/2+maxsft, width/2+maxsft);
+    dsalarge = zeros(height/2+maxsft, width/2+maxsft);
     
     % overlap pixels count
     denominator = conv2_fftvalid(surround0(ones(height/2,width/2),maxsft/2), dsonesShifted, dseffsz);
     
     % actual registration
-    rt = gpuArray.zeros(nFrames, 2);
-    regout = gpuArray.zeros([height, width, nFrames], classUnderlying(moving));
+    rt = zeros(nFrames, 2);
+    regout = zeros([height, width, nFrames], class(moving));
         
     for frm = 1:nFrames
 
@@ -138,7 +129,7 @@ end
 function mout = cshift(m, px)
 % circularly shift the matrix in px pixels so that it matches conv2_fftvalid
     % first, we need to make it larger    
-    mout = gpuArray.zeros(size(m)+px); 
+    mout = zeros(size(m)+px); 
     % the indices below are optimised specifically for calculating conv2
     mout(1,1) = m(end,end);
     mout(px+2:end,1)=m(1:end-1,end);

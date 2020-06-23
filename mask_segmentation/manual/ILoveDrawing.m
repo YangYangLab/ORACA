@@ -6,7 +6,7 @@ function figCtrl = ILoveDrawing
 %
 %   See also SEGMENT_MANUALLY, ILDRESETGLOBALS.
 
-%   This code is released as part of CalSee package.
+%   This code is released as part of RAPID package.
 %   Technical details: 
 %   -   Each uicontrol is given a Tag that is descriptive of its
 %       role. All callbacks are sent to ILDCallbacks.

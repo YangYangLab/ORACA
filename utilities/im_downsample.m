@@ -12,18 +12,9 @@ function imout = im_downsample(im, ds)
 
 if ds == 2
 
-    hnew = fix(size(im,1)/2); wnew = fix(size(im,2)/2);
-    im = [im; im(end,:)]; im = [im, im(:,end)];
-    
-    imout = zeros(hnew, wnew, class(im));
-    for h = 1:hnew
-        for w = 1:wnew
-            imout(h,w) = mean([ im(2*h, 2*w);    im(2*h+1, 2*w); ...
-                                im(2*h, 2*w+1);  im(2*h+1, 2*w+1)]);
-            
-        end
-    end
-    
+    imout = ( im(1:2:end,1:2:end,:) + im(2:2:end,1:2:end,:) + ...
+              im(1:2:end,2:2:end,:) + im(2:2:end,2:2:end,:)) ./ 4;
+
 else
     
 	hnew = 1/ds*size(im,1); wnew = 1/ds*size(im,2);

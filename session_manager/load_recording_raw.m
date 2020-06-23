@@ -64,7 +64,12 @@ try
     kframe = 0;
     while ~feof(fid) && kframe<maxframes
         block = fread(fid, blocksize, ['*' bitcode{bpp}]);
-        if length(block) < blocksize % we go to the end of this file
+        if isempty(block) 
+            % end of file
+            break;
+        elseif length(block) < blocksize 
+            % some data left at the end of this file, which is weird and should catch my
+            % attention
             disp([mfilename ': residual data left at the end of this file (' num2str(length(block)) ' bytes), ignoring']);
             break; 
         end 

@@ -1,8 +1,8 @@
-function [rt, regout] = register_stack_RAPID_ndsGPU(moving, template, params)
-%REGISTER_STACK_RAPID_GPU fast image registration using GPU
-%   RT = REGISTER_STACK_RAPID_GPU(MOVING, TEMPLATE, PARAMS) analyses movements in the video 
+function [rt, regout] = register_stack_ndsGPU(moving, template, params)
+%register_stack_ndsGPU.m fast image registration using GPU
+%   RT = register_stack_ndsGPU.m(MOVING, TEMPLATE, PARAMS) analyses movements in the video 
 %   and outputs a table comprising offsets in X-Y direction. 
-%   [..., REGOUT] = REGISTER_STACK_RAPID_GPU() also outputs registered stack if needed.
+%   [..., REGOUT] = register_stack_ndsGPU.m() also outputs registered stack if needed.
 % Inputs:
 %   MOVING      a 3-D matrix [height * width * nFrames], the video that needs registration
 %   PARAMS      a struct consisting of:
@@ -17,7 +17,7 @@ function [rt, regout] = register_stack_RAPID_ndsGPU(moving, template, params)
 %   RT          a 2-D matrix result table [nFrames*2], each row [yshift, xshift] 
 %   STACKOUT    a 3-D matrix [height * width * nFrames], registered video
 %
-%   See also IM_CONVFFT, REGISTER_STACK_RAPID_GPU.
+%   See also IM_CONVFFT, REGISTER_STACK_GPU.
 
 %   Written by Weihao Sheng, 2019-10-09
 %   Yang Yang's Lab of Neural Basis of Learning and Memory,
@@ -37,10 +37,10 @@ function [rt, regout] = register_stack_RAPID_ndsGPU(moving, template, params)
 if nargin < 3, params = []; end
 
 [height, width, nFrames] = size(moving);    
-maxsft = get_fields(params, 'maxsft', round(min(height, width)/8.0));
-% mcontsft = get_fields(params, 'mcontsft', []);
-% subpix = get_fields(params, 'subpix', []);
-verbose = get_fields(params, 'verbose', 0); % function as a timer
+maxsft = get_option(params, 'maxsft', round(min(height, width)/8.0));
+% mcontsft = get_option(params, 'mcontsft', []);
+% subpix = get_option(params, 'subpix', []);
+verbose = get_option(params, 'verbose', 0); % function as a timer
 
 %% computation
     

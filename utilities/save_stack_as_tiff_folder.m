@@ -1,6 +1,6 @@
-function ok = save_stack_as_tiff_folder(folderPath, fileprefix, data, description)
-%SAVE_RAW_MATRIX save a 3-D matrix into a pile of tiff files in folderPath folder
-%   OK = SAVE_STACK_AS_TIFF_FOLDER(FOLDERPATH, FILEPREFIX, DATA) saves each frame of data
+function ok = save_stack_as_tiff_folder(data, folderPath, fileprefix, description)
+%SAVE_STACK_AS_TIFF_FOLDER save a 3-D matrix into a pile of tiff files in folderPath folder
+%   OK = SAVE_STACK_AS_TIFF_FOLDER(DATA, FOLDERPATH, FILENAMEPREFIX) saves each frame of data
 %   to a tiff file in FOLDERPATH. FILEPREFIX is the naming prefix for saving tiff files.
 %   Files will be named as "FILEPREFIX00000.tif", so maximum frames would be 99999.
 %
@@ -46,7 +46,7 @@ try
         imwrite(framedata, fullfile(folderPath, fname), 'tiff', 'Description', desc);
         ok = frm;
     end
-    disp([mfilename ': stack matrix "' inputname(3) '" saved to ' folderPath]);
+    disp([mfilename ': stack matrix "' inputname(1) '" saved to ' folderPath]);
 catch
     warning([mfilename ': an error occured while writing file.']); 
     disp([mfilename ': stack matrix PARTIALLY saved (' num2str(frm) ')']);

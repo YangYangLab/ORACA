@@ -1,6 +1,6 @@
-function ok = save_stack_as_raw(filePath, data, bpp)
+function ok = save_stack_as_raw(data, filePath, bpp)
 %SAVE_STACK_AS_RAW save a matrix into a .raw file
-%   OK = SAVE_STACK_AS_RAW(FILEPATH, DATA, BPP) saves the DATA to FILEPATH using default
+%   OK = SAVE_STACK_AS_RAW(DATA, FILEPATH, BPP) saves the DATA to FILEPATH using default
 %   datatype of the DATA. 
 %       DATA is a non-negative matrix.
 %       BPP stands for BYTES PER PIXEL (1/2/4 for uint8/uint16/uint32). BPP value other
@@ -42,7 +42,7 @@ try
     fclose(fid);
 
     ok = size(data,3);
-    disp([mfilename ': stack matrix "' inputname(2) '" saved to ' filePath]);
+    disp([mfilename ': stack matrix "' inputname(1) '" saved to ' filePath]);
 catch
     warning([mfilename ': an error occured while writing file.']); 
     disp([mfilename ': stack matrix NOT saved.']);
